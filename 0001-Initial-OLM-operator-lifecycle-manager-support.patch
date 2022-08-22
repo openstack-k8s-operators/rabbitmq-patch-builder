@@ -1,0 +1,152 @@
+From 62139e80e9435fb01623fcaafabbaeda3c4b5eaf Mon Sep 17 00:00:00 2001
+From: Dan Prince <dprince@redhat.com>
+Date: Fri, 27 May 2022 09:58:13 -0400
+Subject: [PATCH] Initial OLM (operator lifecycle manager) support
+
+This contains support to build an intitial OLM bundle
+for the cluster-operator.
+
+This patch also updates PROJECT to drop the group:
+name as this shouldn't be required for this operator
+which doesn't currently use group names (and causes
+the bundle to fail to generate)
+---
+ PROJECT                                       |  3 +-
+ ...luster-operator.clusterserviceversion.yaml | 46 +++++++++++++++++++
+ config/manifests/kustomization.yaml           | 27 +++++++++++
+ hack/build-olm-bundle.sh                      | 15 ++++++
+ 4 files changed, 90 insertions(+), 1 deletion(-)
+ create mode 100644 config/manifests/bases/cluster-operator.clusterserviceversion.yaml
+ create mode 100644 config/manifests/kustomization.yaml
+ create mode 100644 hack/build-olm-bundle.sh
+
+diff --git a/PROJECT b/PROJECT
+index c695f73..4fea6b3 100644
+--- a/PROJECT
++++ b/PROJECT
+@@ -1,6 +1,8 @@
+ domain: rabbitmq.com
+ layout:
+ - go.kubebuilder.io/v3
++plugins:
++  manifests.sdk.operatorframework.io/v2: {}
+ projectName: cluster-operator
+ repo: github.com/rabbitmq/cluster-operator
+ resources:
+@@ -9,7 +11,6 @@ resources:
+     namespaced: true
+   controller: true
+   domain: rabbitmq.com
+-  group: rabbitmq.com
+   kind: RabbitmqCluster
+   path: github.com/rabbitmq/cluster-operator/api/v1beta1
+   version: v1beta1
+diff --git a/config/manifests/bases/cluster-operator.clusterserviceversion.yaml b/config/manifests/bases/cluster-operator.clusterserviceversion.yaml
+new file mode 100644
+index 0000000..8b31762
+--- /dev/null
++++ b/config/manifests/bases/cluster-operator.clusterserviceversion.yaml
+@@ -0,0 +1,46 @@
++apiVersion: operators.coreos.com/v1alpha1
++kind: ClusterServiceVersion
++metadata:
++  annotations:
++    alm-examples: '[]'
++    capabilities: Basic Install
++  name: cluster-operator.v0.0.0
++  namespace: placeholder
++spec:
++  apiservicedefinitions: {}
++  customresourcedefinitions:
++    owned:
++    - description: RabbitmqCluster is the Schema for the RabbitmqCluster API. Each
++        instance of this object corresponds to a single RabbitMQ cluster.
++      displayName: Rabbitmq Cluster
++      kind: RabbitmqCluster
++      name: rabbitmqclusters.rabbitmq.com
++      version: v1beta1
++  description: RabbitMQ Cluster Operator
++  displayName: RabbitMQ Cluster Operator
++  icon:
++  - base64data: ""
++    mediatype: ""
++  install:
++    spec:
++      deployments: null
++    strategy: ""
++  installModes:
++  - supported: true
++    type: OwnNamespace
++  - supported: true
++    type: SingleNamespace
++  - supported: false
++    type: MultiNamespace
++  - supported: true
++    type: AllNamespaces
++  keywords:
++  - rabbitmq
++  links:
++  - name: Cluster Operator
++    url: https://github.com/rabbitmq/cluster-operator
++  maturity: alpha
++  provider:
++    name: RabbitMQ
++    url: https://rabbitmq.com
++  version: 0.0.0
+diff --git a/config/manifests/kustomization.yaml b/config/manifests/kustomization.yaml
+new file mode 100644
+index 0000000..556dc87
+--- /dev/null
++++ b/config/manifests/kustomization.yaml
+@@ -0,0 +1,27 @@
++# These resources constitute the fully configured set of manifests
++# used to generate the 'manifests/' directory in an OLM bundle.
++# Required to use the hack/make-olm-bundle.sh script via
++# operator-sdk.
++resources:
++- bases/cluster-operator.clusterserviceversion.yaml
++- ../default/base
++- ../samples/base
++- ../crd
++- ../rbac
++patchesJson6902:
++- target:
++    group: apps
++    version: v1
++    kind: Deployment
++    name: operator
++    namespace: system
++  patch: |-
++    - op: add
++      path: /metadata/labels/control-plane
++      value: controller-manager
++    - op: replace
++      path: /spec/template/spec/containers/0/name
++      value: manager
++    - op: replace
++      path: /metadata/name
++      value: controller-manager
+diff --git a/hack/build-olm-bundle.sh b/hack/build-olm-bundle.sh
+new file mode 100644
+index 0000000..3a2e342
+--- /dev/null
++++ b/hack/build-olm-bundle.sh
+@@ -0,0 +1,15 @@
++# Script to build an OLM bundle (Operator Lifecycle Manager)
++# NOTE: requires operator-sdk
++
++set -x
++rm -Rf bundle bundle.Dockerfile
++make manifests
++operator-sdk generate kustomize manifests -q
++#cd config/manager && kustomize edit set image controller=rabbitmq-cluster-operator:latest
++kustomize build config/manifests | operator-sdk generate bundle --overwrite --verbose
++#FIXME: look into why scorecard isn't being deactivated
++sed -e '/.*scorecard/d' -i bundle.Dockerfile
++operator-sdk bundle validate ./bundle
++
++echo "Listing..."
++ls bundle/manifests
+-- 
+2.37.2
+
