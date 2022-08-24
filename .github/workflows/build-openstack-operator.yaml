@@ -1,8 +1,9 @@
 name: build RabbitMQ upstream
-#on:
-#  schedule:
-#    - cron:  '45 * * * *'
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron:  '45 * * * *'
 
 env:
   imageregistry: 'quay.io'
