@@ -37,7 +37,7 @@ jobs:
     - name: Checkout patches (this repo)
       uses: actions/checkout@v2
       with:
-        path: ./patches
+        path: ./patch-repo
 
     - name: Set GIT_REV
       run:
@@ -46,8 +46,8 @@ jobs:
     - name: apply patches
       run: |
         pushd "${GITHUB_WORKSPACE}"
-        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches/*.patch"); do
-          patch -p1 < "${GITHUB_WORKSPACE}/patches/${PATCH}"
+        for PATCH in $(ls "${GITHUB_WORKSPACE}/patch-repo/patches/"); do
+          patch -p1 < "${GITHUB_WORKSPACE}/patch-repo/patches/${PATCH}"
         done
         popd
 
@@ -98,7 +98,7 @@ jobs:
     - name: Checkout patches (this repo)
       uses: actions/checkout@v2
       with:
-        path: ./patches
+        path: ./patch-repo
 
     - name: Set GIT_REV
       run:
@@ -107,8 +107,8 @@ jobs:
     - name: apply patches
       run: |
         pushd "${GITHUB_WORKSPACE}"
-        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches/*.patch"); do
-          patch -p1 < "${GITHUB_WORKSPACE}/patches/${PATCH}"
+        for PATCH in $(ls "${GITHUB_WORKSPACE}/patch-repo/patches/"); do
+          patch -p1 < "${GITHUB_WORKSPACE}/patch-repo/patches/${PATCH}"
         done
         popd
 
@@ -134,7 +134,7 @@ jobs:
 
     - name: Create bundle image
       run: |
-        pushd "${GITHUB_WORKSPACE}"/patches/.github/
+        pushd "${GITHUB_WORKSPACE}"/patch-repo/.github/
         chmod +x "create_bundle.sh"
         "./create_bundle.sh"
         popd
@@ -185,7 +185,7 @@ jobs:
     - name: Checkout patches (this repo)
       uses: actions/checkout@v2
       with:
-        path: ./patches
+        path: ./patch-repo
 
     - name: Set GIT_REV
       run:
@@ -194,8 +194,8 @@ jobs:
     - name: apply patches
       run: |
         pushd "${GITHUB_WORKSPACE}"
-        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches/*.patch"); do
-          patch -p1 < "${GITHUB_WORKSPACE}/patches/${PATCH}"
+        for PATCH in $(ls "${GITHUB_WORKSPACE}/patch-repo/patches/"); do
+          patch -p1 < "${GITHUB_WORKSPACE}/patch-repo/patches/${PATCH}"
         done
         popd
 
@@ -223,7 +223,7 @@ jobs:
 
     - name: Create index image
       run: |
-        pushd "${GITHUB_WORKSPACE}"/patches/.github/
+        pushd "${GITHUB_WORKSPACE}"/patch-repo/.github/
         chmod +x "create_opm_index.sh"
         "./create_opm_index.sh"
         popd
