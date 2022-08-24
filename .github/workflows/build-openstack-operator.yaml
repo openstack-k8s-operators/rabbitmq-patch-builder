@@ -1,8 +1,8 @@
-name: periodic build RabbitMQ upstream
-on:
-  schedule:
-    - cron:  '45 * * * *'
-#on: [push, pull_request]
+name: build RabbitMQ upstream
+#on:
+#  schedule:
+#    - cron:  '45 * * * *'
+on: [push, pull_request]
 
 env:
   imageregistry: 'quay.io'
@@ -45,7 +45,7 @@ jobs:
     - name: apply patches
       run: |
         pushd "${GITHUB_WORKSPACE}"
-        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches"); do
+        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches/*.patch"); do
           patch -p1 < "${GITHUB_WORKSPACE}/patches/${PATCH}"
         done
         popd
@@ -106,7 +106,7 @@ jobs:
     - name: apply patches
       run: |
         pushd "${GITHUB_WORKSPACE}"
-        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches"); do
+        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches/*.patch"); do
           patch -p1 < "${GITHUB_WORKSPACE}/patches/${PATCH}"
         done
         popd
@@ -193,7 +193,7 @@ jobs:
     - name: apply patches
       run: |
         pushd "${GITHUB_WORKSPACE}"
-        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches"); do
+        for PATCH in $(ls "${GITHUB_WORKSPACE}/patches/*.patch"); do
           patch -p1 < "${GITHUB_WORKSPACE}/patches/${PATCH}"
         done
         popd
