@@ -1,7 +1,7 @@
-From 62139e80e9435fb01623fcaafabbaeda3c4b5eaf Mon Sep 17 00:00:00 2001
+From cfe60c7e3a610cd65143ea949908d7a488e28e3f Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Fri, 27 May 2022 09:58:13 -0400
-Subject: [PATCH] Initial OLM (operator lifecycle manager) support
+Subject: [PATCH 1/2] Initial OLM (operator lifecycle manager) support
 
 This contains support to build an intitial OLM bundle
 for the cluster-operator.
@@ -13,9 +13,9 @@ the bundle to fail to generate)
 ---
  PROJECT                                       |  3 +-
  ...luster-operator.clusterserviceversion.yaml | 46 +++++++++++++++++++
- config/manifests/kustomization.yaml           | 27 +++++++++++
+ config/manifests/kustomization.yaml           | 10 ++++
  hack/build-olm-bundle.sh                      | 15 ++++++
- 4 files changed, 90 insertions(+), 1 deletion(-)
+ 4 files changed, 73 insertions(+), 1 deletion(-)
  create mode 100644 config/manifests/bases/cluster-operator.clusterserviceversion.yaml
  create mode 100644 config/manifests/kustomization.yaml
  create mode 100644 hack/build-olm-bundle.sh
@@ -95,10 +95,10 @@ index 0000000..8b31762
 +  version: 0.0.0
 diff --git a/config/manifests/kustomization.yaml b/config/manifests/kustomization.yaml
 new file mode 100644
-index 0000000..556dc87
+index 0000000..0247127
 --- /dev/null
 +++ b/config/manifests/kustomization.yaml
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,10 @@
 +# These resources constitute the fully configured set of manifests
 +# used to generate the 'manifests/' directory in an OLM bundle.
 +# Required to use the hack/make-olm-bundle.sh script via
@@ -109,23 +109,6 @@ index 0000000..556dc87
 +- ../samples/base
 +- ../crd
 +- ../rbac
-+patchesJson6902:
-+- target:
-+    group: apps
-+    version: v1
-+    kind: Deployment
-+    name: operator
-+    namespace: system
-+  patch: |-
-+    - op: add
-+      path: /metadata/labels/control-plane
-+      value: controller-manager
-+    - op: replace
-+      path: /spec/template/spec/containers/0/name
-+      value: manager
-+    - op: replace
-+      path: /metadata/name
-+      value: controller-manager
 diff --git a/hack/build-olm-bundle.sh b/hack/build-olm-bundle.sh
 new file mode 100644
 index 0000000..3a2e342
