@@ -1,0 +1,64 @@
+From d0062c65ab089df5520a14fc11cd3f309e346c3c Mon Sep 17 00:00:00 2001
+From: Dan Prince <dprince@redhat.com>
+Date: Wed, 24 Aug 2022 20:13:14 -0400
+Subject: [PATCH 2/2] Set default rabbitmq image to
+ rhosp-rhel8/openstack-rabbitmq
+
+---
+ config/default/kustomization.yaml          |  7 +++++++
+ config/default/manager_default_images.yaml | 15 +++++++++++++++
+ config/manifests/kustomization.yaml        |  2 +-
+ 3 files changed, 23 insertions(+), 1 deletion(-)
+ create mode 100644 config/default/kustomization.yaml
+ create mode 100644 config/default/manager_default_images.yaml
+
+diff --git a/config/default/kustomization.yaml b/config/default/kustomization.yaml
+new file mode 100644
+index 0000000..282c367
+--- /dev/null
++++ b/config/default/kustomization.yaml
+@@ -0,0 +1,7 @@
++bases:
++- ./base
++
++#patches:
++patchesStrategicMerge:
++# Injects our custom images (ENV variable settings)
++- manager_default_images.yaml
+diff --git a/config/default/manager_default_images.yaml b/config/default/manager_default_images.yaml
+new file mode 100644
+index 0000000..8b90b07
+--- /dev/null
++++ b/config/default/manager_default_images.yaml
+@@ -0,0 +1,15 @@
++# This patch inject custom ENV settings to the manager container
++# Used to set our default image locations
++apiVersion: apps/v1
++kind: Deployment
++metadata:
++  name: operator
++  namespace: system
++spec:
++  template:
++    spec:
++      containers:
++      - name: operator
++        env:
++        - name: DEFAULT_RABBITMQ_IMAGE
++          value: registry.redhat.io/rhosp-rhel8/openstack-rabbitmq:16.2
+diff --git a/config/manifests/kustomization.yaml b/config/manifests/kustomization.yaml
+index 0247127..4824e50 100644
+--- a/config/manifests/kustomization.yaml
++++ b/config/manifests/kustomization.yaml
+@@ -4,7 +4,7 @@
+ # operator-sdk.
+ resources:
+ - bases/cluster-operator.clusterserviceversion.yaml
+-- ../default/base
++- ../default
+ - ../samples/base
+ - ../crd
+ - ../rbac
+-- 
+2.37.2
+
