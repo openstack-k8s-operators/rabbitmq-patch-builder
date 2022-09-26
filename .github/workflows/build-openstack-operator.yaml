@@ -22,11 +22,36 @@ jobs:
     outputs:
       have-secrets: ${{ steps.have-secrets.outputs.ok }}
 
+  check-build-tag-exists:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout rabbitmq-cluster-operator repository
+      uses: actions/checkout@v2
+      with:
+        repository: rabbitmq/cluster-operator
+
+    - name: Set GIT_REV
+      run:
+        pushd "${GITHUB_WORKSPACE}" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+    - name: Query tag
+      id: query-tag
+      run:
+        skopeo list-tags docker://${{ env.imageregistry }}/${{ env.imagenamespace }}/rabbitmq-cluster-operator | grep ${{ env.GIT_REV}} || true
+
+    - name: Check tag exists
+      id: check-tag-exists
+      if: "${{ steps.query-tag.outputs != '' }}"
+      run: echo "::set-output name=exists::true"
+    outputs:
+      tag-exists: ${{ steps.check-tag-exists.outputs.exists }}
+
+
   build-rabbitmq-cluster-operator:
     name: Build rabbitmq-cluster-operator image using buildah
     runs-on: ubuntu-latest
-    needs: [check-secrets]
-    if: needs.check-secrets.outputs.have-secrets == 'true'
+    needs: [check-secrets, check-build-tag-exists]
+    if: needs.check-secrets.outputs.have-secrets == 'true' && needs.check-build-tag-exists.outputs.tag-exists != 'true'
 
     steps:
     - name: Checkout rabbitmq-cluster-operator repository
