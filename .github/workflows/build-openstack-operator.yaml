@@ -37,7 +37,7 @@ jobs:
     - name: Query tag
       id: query-tag
       run:
-        echo "::set-output name=tag::$(skopeo list-tags docker://${{ env.imageregistry }}/${{ env.imagenamespace }}/rabbitmq-cluster-operator | grep ${{ env.GIT_REV}} | sed -e 's|^[[:space:]]*||' || true)"
+        echo "::set-output name=tag::$(skopeo list-tags docker://${{ env.imageregistry }}/${{ env.imagenamespace }}/rabbitmq-cluster-operator-index | grep ${{ env.GIT_REV}} | sed -e 's|^[[:space:]]*||' || true)"
 
     outputs:
       tag: ${{ steps.query-tag.outputs.tag }}

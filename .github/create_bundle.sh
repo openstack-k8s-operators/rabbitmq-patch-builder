@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CLUSTER_BUNDLE_FILE="bundle/manifests/cluster-operator.clusterserviceversion.yaml"
+CLUSTER_BUNDLE_FILE="bundle/manifests/rabbitmq-cluster-operator.clusterserviceversion.yaml"
 
 echo "Creating rabbitmq-cluster operator bundle"
 cd ../..
@@ -33,6 +33,7 @@ pushd config/manager
 kustomize edit set image controller=$OPERATOR_IMG_WITH_DIGEST
 popd
 kustomize build config/manifests | operator-sdk generate bundle --overwrite --verbose
+cp properties.yaml ./bundle/metadata
 #FIXME: look into why scorecard isn't being deactivated
 sed -e '/.*scorecard/d' -i bundle.Dockerfile
 operator-sdk bundle validate ./bundle
