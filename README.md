@@ -1,6 +1,6 @@
 # rabbitmq-patch-builder
 
-Contains patches for openstack-k8s-operators to integrate [rabbitmq/cluster-operator] (https://github.com/rabbitmq/cluster-operator). Also build automation for openstack-k8s-operators.
+Contains patches and build automation for openstack-k8s-operators to integrate [rabbitmq/cluster-operator] (https://github.com/rabbitmq/cluster-operator).
 
 ## Description
 

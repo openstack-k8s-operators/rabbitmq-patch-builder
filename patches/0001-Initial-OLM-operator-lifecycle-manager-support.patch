@@ -1,4 +1,4 @@
-From 9584d4342403006ebbd05f5e5024af3bd2188ceb Mon Sep 17 00:00:00 2001
+From 2f4501adee4074b763306a3a204bbb75e45eb939 Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Fri, 27 May 2022 09:58:13 -0400
 Subject: [PATCH 1/2] Initial OLM (operator lifecycle manager) support
@@ -23,7 +23,7 @@ the bundle to fail to generate)
  create mode 100644 properties.yaml
 
 diff --git a/PROJECT b/PROJECT
-index c695f73..1da0737 100644
+index c695f73b..1da07372 100644
 --- a/PROJECT
 +++ b/PROJECT
 @@ -1,7 +1,9 @@
@@ -47,7 +47,7 @@ index c695f73..1da0737 100644
    version: v1beta1
 diff --git a/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml b/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
 new file mode 100644
-index 0000000..360a141
+index 00000000..360a1416
 --- /dev/null
 +++ b/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
 @@ -0,0 +1,47 @@
@@ -100,7 +100,7 @@ index 0000000..360a141
 +  version: 0.0.1
 diff --git a/config/manifests/kustomization.yaml b/config/manifests/kustomization.yaml
 new file mode 100644
-index 0000000..6904487
+index 00000000..69044879
 --- /dev/null
 +++ b/config/manifests/kustomization.yaml
 @@ -0,0 +1,10 @@
@@ -116,7 +116,7 @@ index 0000000..6904487
 +- ../rbac
 diff --git a/hack/build-olm-bundle.sh b/hack/build-olm-bundle.sh
 new file mode 100644
-index 0000000..3a2e342
+index 00000000..306dcf67
 --- /dev/null
 +++ b/hack/build-olm-bundle.sh
 @@ -0,0 +1,15 @@
@@ -128,7 +128,7 @@ index 0000000..3a2e342
 +make manifests
 +operator-sdk generate kustomize manifests -q
 +#cd config/manager && kustomize edit set image controller=rabbitmq-cluster-operator:latest
-+kustomize build config/manifests | operator-sdk generate bundle --overwrite --verbose
++kustomize build config/manifests | operator-sdk generate bundle --overwrite --verbose --use-image-digests
 +#FIXME: look into why scorecard isn't being deactivated
 +sed -e '/.*scorecard/d' -i bundle.Dockerfile
 +operator-sdk bundle validate ./bundle
@@ -137,7 +137,7 @@ index 0000000..3a2e342
 +ls bundle/manifests
 diff --git a/properties.yaml b/properties.yaml
 new file mode 100644
-index 0000000..82c2ebb
+index 00000000..82c2ebb4
 --- /dev/null
 +++ b/properties.yaml
 @@ -0,0 +1,4 @@
