@@ -29,6 +29,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: rabbitmq/cluster-operator
+        ref: v2.6.0
 
     - name: Set GIT_REV
       run:
@@ -53,6 +54,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: rabbitmq/cluster-operator
+        ref: v2.6.0
 
     - name: Checkout patches (this repo)
       uses: actions/checkout@v2
@@ -114,6 +116,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: rabbitmq/cluster-operator
+        ref: v2.6.0
 
     - name: Checkout patches (this repo)
       uses: actions/checkout@v2
@@ -201,6 +204,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: rabbitmq/cluster-operator
+        ref: v2.6.0
 
     - name: Checkout patches (this repo)
       uses: actions/checkout@v2
