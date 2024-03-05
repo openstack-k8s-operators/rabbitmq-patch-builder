@@ -26,14 +26,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout rabbitmq-cluster-operator repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: rabbitmq/cluster-operator
         ref: v2.6.0
 
+    - name: Checkout patches (this repo)
+      uses: actions/checkout@v4
+      with:
+        path: ./patch-repo
+
     - name: Set GIT_REV
       run:
-        pushd "${GITHUB_WORKSPACE}" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        pushd "${GITHUB_WORKSPACE}/patch-repo" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
     - name: Query tag
       id: query-tag
@@ -51,19 +56,19 @@ jobs:
 
     steps:
     - name: Checkout rabbitmq-cluster-operator repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: rabbitmq/cluster-operator
         ref: v2.6.0
 
     - name: Checkout patches (this repo)
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         path: ./patch-repo
 
     - name: Set GIT_REV
       run:
-        pushd "${GITHUB_WORKSPACE}" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        pushd "${GITHUB_WORKSPACE}/patch-repo" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
     - name: apply patches
       run: |
@@ -108,24 +113,24 @@ jobs:
 
     steps:
     - name: Install Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v4
       with:
-        go-version: 1.21.x
+        go-version: 1.20.x
 
     - name: Checkout rabbitmq-cluster-operator repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: rabbitmq/cluster-operator
         ref: v2.6.0
 
     - name: Checkout patches (this repo)
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         path: ./patch-repo
 
     - name: Set GIT_REV
       run:
-        pushd "${GITHUB_WORKSPACE}" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        pushd "${GITHUB_WORKSPACE}/patch-repo" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
     - name: apply patches
       run: |
@@ -168,7 +173,7 @@ jobs:
 
     - name: Get branch name
       id: branch-name
-      uses: tj-actions/branch-names@v5
+      uses: tj-actions/branch-names@v7
 
     - name: Set latest tag for non main branch
       if: "${{ steps.branch-name.outputs.current_branch != 'main' }}"
@@ -201,19 +206,19 @@ jobs:
 
     steps:
     - name: Checkout rabbitmq-cluster-operator repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: rabbitmq/cluster-operator
         ref: v2.6.0
 
     - name: Checkout patches (this repo)
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         path: ./patch-repo
 
     - name: Set GIT_REV
       run:
-        pushd "${GITHUB_WORKSPACE}" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        pushd "${GITHUB_WORKSPACE}/patch-repo" && echo "GIT_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
     - name: apply patches
       run: |
