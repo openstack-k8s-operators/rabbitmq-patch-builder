@@ -1,0 +1,222 @@
+From 961a0ee8bf7f95ca5e4675310fa019e3507174ba Mon Sep 17 00:00:00 2001
+From: Dan Prince <dprince@redhat.com>
+Date: Wed, 13 Mar 2024 08:07:18 -0400
+Subject: [PATCH 3/3] Add RabbitmqClusterSpecCore spec for
+ OpenStackControlplane
+
+---
+ api/v1beta1/rabbitmqcluster_types.go | 54 ++++++++++++++++++++++++++++
+ api/v1beta1/zz_generated.deepcopy.go | 53 +++++++++++++++++++++++++++
+ docs/api/rabbitmq.com.ref.asciidoc   | 12 +++++--
+ 3 files changed, 117 insertions(+), 2 deletions(-)
+
+diff --git a/api/v1beta1/rabbitmqcluster_types.go b/api/v1beta1/rabbitmqcluster_types.go
+index 46c3d95d..f10dfa32 100644
+--- a/api/v1beta1/rabbitmqcluster_types.go
++++ b/api/v1beta1/rabbitmqcluster_types.go
+@@ -100,6 +100,60 @@ type RabbitmqClusterSpec struct {
+ 	SecretBackend SecretBackend `json:"secretBackend,omitempty"`
+ }
+ 
++// A duplicate of the RabbitmqClusterSpec, but with the Image fields removed for use by OpenStackControlplane
++// NOTE: we duplicate it to keep the delta/PR here lighteweight and avoid changes to tests/controllers. This
++// will need to be recopied/created if the RabbitmqClusterSpec changes.
++type RabbitmqClusterSpecCore struct {
++	// Replicas is the number of nodes in the RabbitMQ cluster. Each node is deployed as a Replica in a StatefulSet. Only 1, 3, 5 replicas clusters are tested.
++	// This value should be an odd number to ensure the resultant cluster can establish exactly one quorum of nodes
++	// in the event of a fragmenting network partition.
++	// +optional
++	// +kubebuilder:validation:Minimum:=0
++	// +kubebuilder:default:=1
++	Replicas *int32                     `json:"replicas,omitempty"`
++	Service  RabbitmqClusterServiceSpec `json:"service,omitempty"`
++	// The desired persistent storage configuration for each Pod in the cluster.
++	// +kubebuilder:default:={storage: "10Gi"}
++	Persistence RabbitmqClusterPersistenceSpec `json:"persistence,omitempty"`
++	// The desired compute resource requirements of Pods in the cluster.
++	// +kubebuilder:default:={limits: {cpu: "2000m", memory: "2Gi"}, requests: {cpu: "1000m", memory: "2Gi"}}
++	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
++	// Affinity scheduling rules to be applied on created Pods.
++	Affinity *corev1.Affinity `json:"affinity,omitempty"`
++	// Tolerations is the list of Toleration resources attached to each Pod in the RabbitmqCluster.
++	Tolerations []corev1.Toleration `json:"tolerations,omitempty"`
++	// Configuration options for RabbitMQ Pods created in the cluster.
++	Rabbitmq RabbitmqClusterConfigurationSpec `json:"rabbitmq,omitempty"`
++	// TLS-related configuration for the RabbitMQ cluster.
++	TLS TLSSpec `json:"tls,omitempty"`
++	// Provides the ability to override the generated manifest of several child resources.
++	Override RabbitmqClusterOverrideSpec `json:"override,omitempty"`
++	// If unset, or set to false, the cluster will run `rabbitmq-queues rebalance all` whenever the cluster is updated.
++	// Set to true to prevent the operator rebalancing queue leaders after a cluster update.
++	// Has no effect if the cluster only consists of one node.
++	// For more information, see https://www.rabbitmq.com/rabbitmq-queues.8.html#rebalance
++	SkipPostDeploySteps bool `json:"skipPostDeploySteps,omitempty"`
++	// TerminationGracePeriodSeconds is the timeout that each rabbitmqcluster pod will have to terminate gracefully.
++	// It defaults to 604800 seconds ( a week long) to ensure that the container preStop lifecycle hook can finish running.
++	// For more information, see: https://github.com/rabbitmq/cluster-operator/blob/main/docs/design/20200520-graceful-pod-termination.md
++	// +kubebuilder:validation:Minimum:=0
++	// +kubebuilder:default:=604800
++	TerminationGracePeriodSeconds *int64 `json:"terminationGracePeriodSeconds,omitempty"`
++	// DelayStartSeconds is the time the init container (`setup-container`) will sleep before terminating.
++	// This effectively delays the time between starting the Pod and starting the `rabbitmq` container.
++	// RabbitMQ relies on up-to-date DNS entries early during peer discovery.
++	// The purpose of this artificial delay is to ensure that DNS entries are up-to-date when booting RabbitMQ.
++	// For more information, see https://github.com/kubernetes/kubernetes/issues/92559
++	// If your Kubernetes DNS backend is configured with a low DNS cache value or publishes not ready addresses
++	// promptly, you can decrase this value or set it to 0.
++	// +kubebuilder:validation:Minimum:=0
++	// +kubebuilder:default:=30
++	DelayStartSeconds *int32 `json:"delayStartSeconds,omitempty"`
++	// Secret backend configuration for the RabbitmqCluster.
++	// Enables to fetch default user credentials and certificates from K8s external secret stores.
++	SecretBackend SecretBackend `json:"secretBackend,omitempty"`
++}
++
+ // SecretBackend configures a single secret backend.
+ // Today, only Vault exists as supported secret backend.
+ // Future secret backends could be Secrets Store CSI Driver.
+diff --git a/api/v1beta1/zz_generated.deepcopy.go b/api/v1beta1/zz_generated.deepcopy.go
+index e2318bed..8b73f5c7 100644
+--- a/api/v1beta1/zz_generated.deepcopy.go
++++ b/api/v1beta1/zz_generated.deepcopy.go
+@@ -399,6 +399,59 @@ func (in *RabbitmqClusterSpec) DeepCopy() *RabbitmqClusterSpec {
+ 	return out
+ }
+ 
++// DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
++func (in *RabbitmqClusterSpecCore) DeepCopyInto(out *RabbitmqClusterSpecCore) {
++	*out = *in
++	if in.Replicas != nil {
++		in, out := &in.Replicas, &out.Replicas
++		*out = new(int32)
++		**out = **in
++	}
++	in.Service.DeepCopyInto(&out.Service)
++	in.Persistence.DeepCopyInto(&out.Persistence)
++	if in.Resources != nil {
++		in, out := &in.Resources, &out.Resources
++		*out = new(v1.ResourceRequirements)
++		(*in).DeepCopyInto(*out)
++	}
++	if in.Affinity != nil {
++		in, out := &in.Affinity, &out.Affinity
++		*out = new(v1.Affinity)
++		(*in).DeepCopyInto(*out)
++	}
++	if in.Tolerations != nil {
++		in, out := &in.Tolerations, &out.Tolerations
++		*out = make([]v1.Toleration, len(*in))
++		for i := range *in {
++			(*in)[i].DeepCopyInto(&(*out)[i])
++		}
++	}
++	in.Rabbitmq.DeepCopyInto(&out.Rabbitmq)
++	out.TLS = in.TLS
++	in.Override.DeepCopyInto(&out.Override)
++	if in.TerminationGracePeriodSeconds != nil {
++		in, out := &in.TerminationGracePeriodSeconds, &out.TerminationGracePeriodSeconds
++		*out = new(int64)
++		**out = **in
++	}
++	if in.DelayStartSeconds != nil {
++		in, out := &in.DelayStartSeconds, &out.DelayStartSeconds
++		*out = new(int32)
++		**out = **in
++	}
++	in.SecretBackend.DeepCopyInto(&out.SecretBackend)
++}
++
++// DeepCopy is an autogenerated deepcopy function, copying the receiver, creating a new RabbitmqClusterSpecCore.
++func (in *RabbitmqClusterSpecCore) DeepCopy() *RabbitmqClusterSpecCore {
++	if in == nil {
++		return nil
++	}
++	out := new(RabbitmqClusterSpecCore)
++	in.DeepCopyInto(out)
++	return out
++}
++
+ // DeepCopyInto is an autogenerated deepcopy function, copying the receiver, writing into out. in must be non-nil.
+ func (in *RabbitmqClusterStatus) DeepCopyInto(out *RabbitmqClusterStatus) {
+ 	*out = *in
+diff --git a/docs/api/rabbitmq.com.ref.asciidoc b/docs/api/rabbitmq.com.ref.asciidoc
+index 31716ccd..db335965 100644
+--- a/docs/api/rabbitmq.com.ref.asciidoc
++++ b/docs/api/rabbitmq.com.ref.asciidoc
+@@ -145,6 +145,7 @@ RabbitMQ-related configuration.
+ .Appears In:
+ ****
+ - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
++- xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspeccore[$$RabbitmqClusterSpecCore$$]
+ ****
+ 
+ [cols="25a,75a", options="header"]
+@@ -204,6 +205,7 @@ Provides the ability to override the generated manifest of several child resourc
+ .Appears In:
+ ****
+ - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
++- xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspeccore[$$RabbitmqClusterSpecCore$$]
+ ****
+ 
+ [cols="25a,75a", options="header"]
+@@ -222,13 +224,14 @@ The settings for the persistent storage desired for each Pod in the RabbitmqClus
+ .Appears In:
+ ****
+ - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
++- xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspeccore[$$RabbitmqClusterSpecCore$$]
+ ****
+ 
+ [cols="25a,75a", options="header"]
+ |===
+ | Field | Description
+ | *`storageClassName`* __string__ | The name of the StorageClass to claim a PersistentVolume from.
+-| *`storage`* __Quantity__ | The requested size of the persistent volume attached to each Pod in the RabbitmqCluster. The format of this field matches that defined by kubernetes/apimachinery. See https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#Quantity for more info on the format of this field.
++| *`storage`* __xref:{anchor_prefix}-k8s-io-apimachinery-pkg-api-resource-quantity[$$Quantity$$]__ | The requested size of the persistent volume attached to each Pod in the RabbitmqCluster. The format of this field matches that defined by kubernetes/apimachinery. See https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#Quantity for more info on the format of this field.
+ |===
+ 
+ 
+@@ -277,6 +280,7 @@ Settable attributes for the Service resource.
+ .Appears In:
+ ****
+ - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
++- xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspeccore[$$RabbitmqClusterSpecCore$$]
+ ****
+ 
+ [cols="25a,75a", options="header"]
+@@ -319,6 +323,8 @@ Spec is the desired state of the RabbitmqCluster Custom Resource.
+ |===
+ 
+ 
++
++
+ [id="{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterstatus"]
+ ==== RabbitmqClusterStatus 
+ 
+@@ -332,7 +338,7 @@ Status presents the observed state of RabbitmqCluster
+ [cols="25a,75a", options="header"]
+ |===
+ | Field | Description
+-| *`conditions`* __xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-internal-status-rabbitmqclustercondition[$$RabbitmqClusterCondition$$] array__ | Set of Conditions describing the current state of the RabbitmqCluster
++| *`conditions`* __RabbitmqClusterCondition array__ | Set of Conditions describing the current state of the RabbitmqCluster
+ | *`defaultUser`* __xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterdefaultuser[$$RabbitmqClusterDefaultUser$$]__ | Identifying information on internal resources
+ | *`binding`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#localobjectreference-v1-core[$$LocalObjectReference$$]__ | Binding exposes a secret containing the binding information for this RabbitmqCluster. It implements the service binding Provisioned Service duck type. See: https://github.com/servicebinding/spec#provisioned-service
+ | *`observedGeneration`* __integer__ | observedGeneration is the most recent successful generation observed for this RabbitmqCluster. It corresponds to the RabbitmqCluster's generation, which is updated on mutation by the API Server.
+@@ -347,6 +353,7 @@ SecretBackend configures a single secret backend. Today, only Vault exists as su
+ .Appears In:
+ ****
+ - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
++- xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspeccore[$$RabbitmqClusterSpecCore$$]
+ ****
+ 
+ [cols="25a,75a", options="header"]
+@@ -428,6 +435,7 @@ Allows for the configuration of TLS certificates to be used by RabbitMQ. Also al
+ .Appears In:
+ ****
+ - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
++- xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspeccore[$$RabbitmqClusterSpecCore$$]
+ ****
+ 
+ [cols="25a,75a", options="header"]
+-- 
+2.44.0
+
