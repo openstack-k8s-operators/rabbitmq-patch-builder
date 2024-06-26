@@ -1,7 +1,7 @@
 From 7bc6842d4c6de588919de9fd42ddb54af00fcb62 Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Wed, 13 Mar 2024 07:50:05 -0400
-Subject: [PATCH 2/3] FIPS-compliant Dockerfile updates
+Subject: [PATCH 2/5] FIPS-compliant Dockerfile updates
 
 This commit modifies the Dockerfile to have the rabbitmq-cluster-operator
 to be built from ubi9 go-toolset and ubi-minimal images so to have
@@ -63,5 +63,5 @@ index eb648a8d..2dcbcbea 100644
  USER 1000:1000
  
 -- 
-2.44.0
+2.45.2
 

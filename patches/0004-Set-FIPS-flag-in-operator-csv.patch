@@ -1,7 +1,7 @@
 From 07b4debe6900ae83316aa23ca3ad6cf56c957dd6 Mon Sep 17 00:00:00 2001
 From: Damien Ciabrini <dciabrin@redhat.com>
 Date: Tue, 28 May 2024 11:03:46 +0200
-Subject: [PATCH 4/4] Set FIPS flag in operator csv
+Subject: [PATCH 4/5] Set FIPS flag in operator csv
 
 This forked rabbitmq operator from has already been modified [1] to support
 FIPS-compliant container image build.

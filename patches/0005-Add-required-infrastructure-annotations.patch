@@ -1,0 +1,33 @@
+From e7df1b654cb702d343996c7ac4245de8535c39c7 Mon Sep 17 00:00:00 2001
+From: Dan Prince <dprince@redhat.com>
+Date: Wed, 26 Jun 2024 15:43:27 -0400
+Subject: [PATCH 5/5] Add required infrastructure annotations
+
+Jira: https://issues.redhat.com/browse/OSPRH-7935
+
+Signed-off-by: Dan Prince <dprince@redhat.com>
+---
+ .../rabbitmq-cluster-operator.clusterserviceversion.yaml    | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml b/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
+index 44119cab..688f7b41 100644
+--- a/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
++++ b/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
+@@ -4,7 +4,13 @@ metadata:
+   annotations:
+     alm-examples: '[]'
+     capabilities: Basic Install
++    features.operators.openshift.io/disconnected: "true"
+     features.operators.openshift.io/fips-compliant: "true"
++    features.operators.openshift.io/proxy-aware: "false"
++    features.operators.openshift.io/tls-profiles: "false"
++    features.operators.openshift.io/token-auth-aws: "false"
++    features.operators.openshift.io/token-auth-azure: "false"
++    features.operators.openshift.io/token-auth-gcp: "false"
+     operators.operatorframework.io/operator-type: non-standalone
+   name: rabbitmq-cluster-operator.v0.0.1
+   namespace: placeholder
+-- 
+2.45.2
+
