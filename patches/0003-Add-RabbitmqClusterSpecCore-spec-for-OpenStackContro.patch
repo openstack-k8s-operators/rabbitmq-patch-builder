@@ -1,7 +1,7 @@
 From 961a0ee8bf7f95ca5e4675310fa019e3507174ba Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Wed, 13 Mar 2024 08:07:18 -0400
-Subject: [PATCH 3/3] Add RabbitmqClusterSpecCore spec for
+Subject: [PATCH 3/5] Add RabbitmqClusterSpecCore spec for
  OpenStackControlplane
 
 ---
@@ -218,5 +218,5 @@ index 31716ccd..db335965 100644
  
  [cols="25a,75a", options="header"]
 -- 
-2.44.0
+2.45.2
 
