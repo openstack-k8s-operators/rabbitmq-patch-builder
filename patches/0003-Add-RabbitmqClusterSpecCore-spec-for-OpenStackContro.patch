@@ -1,7 +1,7 @@
 From 961a0ee8bf7f95ca5e4675310fa019e3507174ba Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Wed, 13 Mar 2024 08:07:18 -0400
-Subject: [PATCH 3/5] Add RabbitmqClusterSpecCore spec for
+Subject: [PATCH 3/6] Add RabbitmqClusterSpecCore spec for
  OpenStackControlplane
 
 ---
@@ -11,7 +11,7 @@ Subject: [PATCH 3/5] Add RabbitmqClusterSpecCore spec for
  3 files changed, 117 insertions(+), 2 deletions(-)
 
 diff --git a/api/v1beta1/rabbitmqcluster_types.go b/api/v1beta1/rabbitmqcluster_types.go
-index 46c3d95d..f10dfa32 100644
+index 46c3d95..f10dfa3 100644
 --- a/api/v1beta1/rabbitmqcluster_types.go
 +++ b/api/v1beta1/rabbitmqcluster_types.go
 @@ -100,6 +100,60 @@ type RabbitmqClusterSpec struct {
@@ -76,7 +76,7 @@ index 46c3d95d..f10dfa32 100644
  // Today, only Vault exists as supported secret backend.
  // Future secret backends could be Secrets Store CSI Driver.
 diff --git a/api/v1beta1/zz_generated.deepcopy.go b/api/v1beta1/zz_generated.deepcopy.go
-index e2318bed..8b73f5c7 100644
+index e2318be..8b73f5c 100644
 --- a/api/v1beta1/zz_generated.deepcopy.go
 +++ b/api/v1beta1/zz_generated.deepcopy.go
 @@ -399,6 +399,59 @@ func (in *RabbitmqClusterSpec) DeepCopy() *RabbitmqClusterSpec {
@@ -140,7 +140,7 @@ index e2318bed..8b73f5c7 100644
  func (in *RabbitmqClusterStatus) DeepCopyInto(out *RabbitmqClusterStatus) {
  	*out = *in
 diff --git a/docs/api/rabbitmq.com.ref.asciidoc b/docs/api/rabbitmq.com.ref.asciidoc
-index 31716ccd..db335965 100644
+index 31716cc..db33596 100644
 --- a/docs/api/rabbitmq.com.ref.asciidoc
 +++ b/docs/api/rabbitmq.com.ref.asciidoc
 @@ -145,6 +145,7 @@ RabbitMQ-related configuration.

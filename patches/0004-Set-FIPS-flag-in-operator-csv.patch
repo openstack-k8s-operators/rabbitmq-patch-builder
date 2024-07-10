@@ -1,7 +1,7 @@
 From 07b4debe6900ae83316aa23ca3ad6cf56c957dd6 Mon Sep 17 00:00:00 2001
 From: Damien Ciabrini <dciabrin@redhat.com>
 Date: Tue, 28 May 2024 11:03:46 +0200
-Subject: [PATCH 4/5] Set FIPS flag in operator csv
+Subject: [PATCH 4/6] Set FIPS flag in operator csv
 
 This forked rabbitmq operator from has already been modified [1] to support
 FIPS-compliant container image build.
@@ -20,14 +20,14 @@ Jira: OSPRH-7056
 
 diff --git a/.prow_ci.env b/.prow_ci.env
 new file mode 100644
-index 00000000..ce722ac7
+index 0000000..ce722ac
 --- /dev/null
 +++ b/.prow_ci.env
 @@ -0,0 +1,2 @@
 +export USE_IMAGE_DIGESTS=true
 +export FAIL_FIPS_CHECK=true
 diff --git a/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml b/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
-index 360a1416..44119cab 100644
+index 360a141..44119ca 100644
 --- a/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
 +++ b/config/manifests/bases/rabbitmq-cluster-operator.clusterserviceversion.yaml
 @@ -4,6 +4,7 @@ metadata:
