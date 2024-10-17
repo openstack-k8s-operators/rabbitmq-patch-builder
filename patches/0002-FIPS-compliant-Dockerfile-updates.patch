@@ -1,7 +1,7 @@
-From 7bc6842d4c6de588919de9fd42ddb54af00fcb62 Mon Sep 17 00:00:00 2001
+From 3d69b07482fbab86ac5ddc208665111186f84dc3 Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Wed, 13 Mar 2024 07:50:05 -0400
-Subject: [PATCH 2/6] FIPS-compliant Dockerfile updates
+Subject: [PATCH 2/3] FIPS-compliant Dockerfile updates
 
 This commit modifies the Dockerfile to have the rabbitmq-cluster-operator
 to be built from ubi9 go-toolset and ubi-minimal images so to have
@@ -9,19 +9,31 @@ the necessary dependencies to be FIPS compliant.
 
 It also squashes the build steps by removing the intermediate step
 where we create the respective user/group.
----
- Dockerfile | 23 +++++++++--------------
- 1 file changed, 9 insertions(+), 14 deletions(-)
 
+Set FIPS flag in operator csv
+---
+ .prow_ci.env |  2 ++
+ Dockerfile   | 23 +++++++++--------------
+ 2 files changed, 11 insertions(+), 14 deletions(-)
+ create mode 100644 .prow_ci.env
+
+diff --git a/.prow_ci.env b/.prow_ci.env
+new file mode 100644
+index 00000000..ce722ac7
+--- /dev/null
++++ b/.prow_ci.env
+@@ -0,0 +1,2 @@
++export USE_IMAGE_DIGESTS=true
++export FAIL_FIPS_CHECK=true
 diff --git a/Dockerfile b/Dockerfile
-index eb648a8..2dcbcbe 100644
+index 1b4a0df0..6cf1629b 100644
 --- a/Dockerfile
 +++ b/Dockerfile
 @@ -1,8 +1,11 @@
 +
  # Build the manager binary
--FROM --platform=$BUILDPLATFORM golang:1.20 as builder
-+FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi9/go-toolset:1.20 as builder
+-FROM --platform=$BUILDPLATFORM golang:1.21 as builder
++FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi9/go-toolset:1.21 as builder
  
  WORKDIR /workspace
  
@@ -63,5 +75,5 @@ index eb648a8..2dcbcbe 100644
  USER 1000:1000
  
 -- 
-2.45.2
+2.47.0
 
