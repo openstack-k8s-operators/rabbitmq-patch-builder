@@ -1,17 +1,17 @@
-From 961a0ee8bf7f95ca5e4675310fa019e3507174ba Mon Sep 17 00:00:00 2001
+From a3524acedd49ee0a49b5e6ae9e093c5cfb4ca590 Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Wed, 13 Mar 2024 08:07:18 -0400
-Subject: [PATCH 3/6] Add RabbitmqClusterSpecCore spec for
+Subject: [PATCH 3/3] Add RabbitmqClusterSpecCore spec for
  OpenStackControlplane
 
 ---
  api/v1beta1/rabbitmqcluster_types.go | 54 ++++++++++++++++++++++++++++
  api/v1beta1/zz_generated.deepcopy.go | 53 +++++++++++++++++++++++++++
- docs/api/rabbitmq.com.ref.asciidoc   | 12 +++++--
- 3 files changed, 117 insertions(+), 2 deletions(-)
+ docs/api/rabbitmq.com.ref.asciidoc   |  8 +++++
+ 3 files changed, 115 insertions(+)
 
 diff --git a/api/v1beta1/rabbitmqcluster_types.go b/api/v1beta1/rabbitmqcluster_types.go
-index 46c3d95..f10dfa3 100644
+index 236ada44..b3cb991c 100644
 --- a/api/v1beta1/rabbitmqcluster_types.go
 +++ b/api/v1beta1/rabbitmqcluster_types.go
 @@ -100,6 +100,60 @@ type RabbitmqClusterSpec struct {
@@ -76,7 +76,7 @@ index 46c3d95..f10dfa3 100644
  // Today, only Vault exists as supported secret backend.
  // Future secret backends could be Secrets Store CSI Driver.
 diff --git a/api/v1beta1/zz_generated.deepcopy.go b/api/v1beta1/zz_generated.deepcopy.go
-index e2318be..8b73f5c 100644
+index e2318bed..8b73f5c7 100644
 --- a/api/v1beta1/zz_generated.deepcopy.go
 +++ b/api/v1beta1/zz_generated.deepcopy.go
 @@ -399,6 +399,59 @@ func (in *RabbitmqClusterSpec) DeepCopy() *RabbitmqClusterSpec {
@@ -140,10 +140,10 @@ index e2318be..8b73f5c 100644
  func (in *RabbitmqClusterStatus) DeepCopyInto(out *RabbitmqClusterStatus) {
  	*out = *in
 diff --git a/docs/api/rabbitmq.com.ref.asciidoc b/docs/api/rabbitmq.com.ref.asciidoc
-index 31716cc..db33596 100644
+index c4f9d1aa..042e713a 100644
 --- a/docs/api/rabbitmq.com.ref.asciidoc
 +++ b/docs/api/rabbitmq.com.ref.asciidoc
-@@ -145,6 +145,7 @@ RabbitMQ-related configuration.
+@@ -191,6 +191,7 @@ RabbitMQ-related configuration.
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -151,7 +151,7 @@ index 31716cc..db33596 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -204,6 +205,7 @@ Provides the ability to override the generated manifest of several child resourc
+@@ -263,6 +264,7 @@ Provides the ability to override the generated manifest of several child resourc
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -159,7 +159,7 @@ index 31716cc..db33596 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -222,13 +224,14 @@ The settings for the persistent storage desired for each Pod in the RabbitmqClus
+@@ -281,6 +283,7 @@ The settings for the persistent storage desired for each Pod in the RabbitmqClus
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -167,15 +167,7 @@ index 31716cc..db33596 100644
  ****
  
  [cols="25a,75a", options="header"]
- |===
- | Field | Description
- | *`storageClassName`* __string__ | The name of the StorageClass to claim a PersistentVolume from.
--| *`storage`* __Quantity__ | The requested size of the persistent volume attached to each Pod in the RabbitmqCluster. The format of this field matches that defined by kubernetes/apimachinery. See https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#Quantity for more info on the format of this field.
-+| *`storage`* __xref:{anchor_prefix}-k8s-io-apimachinery-pkg-api-resource-quantity[$$Quantity$$]__ | The requested size of the persistent volume attached to each Pod in the RabbitmqCluster. The format of this field matches that defined by kubernetes/apimachinery. See https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#Quantity for more info on the format of this field.
- |===
- 
- 
-@@ -277,6 +280,7 @@ Settable attributes for the Service resource.
+@@ -338,6 +341,7 @@ Settable attributes for the Service resource.
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -183,7 +175,7 @@ index 31716cc..db33596 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -319,6 +323,8 @@ Spec is the desired state of the RabbitmqCluster Custom Resource.
+@@ -397,6 +401,8 @@ Enables to fetch default user credentials and certificates from K8s external sec
  |===
  
  
@@ -192,16 +184,7 @@ index 31716cc..db33596 100644
  [id="{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterstatus"]
  ==== RabbitmqClusterStatus 
  
-@@ -332,7 +338,7 @@ Status presents the observed state of RabbitmqCluster
- [cols="25a,75a", options="header"]
- |===
- | Field | Description
--| *`conditions`* __xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-internal-status-rabbitmqclustercondition[$$RabbitmqClusterCondition$$] array__ | Set of Conditions describing the current state of the RabbitmqCluster
-+| *`conditions`* __RabbitmqClusterCondition array__ | Set of Conditions describing the current state of the RabbitmqCluster
- | *`defaultUser`* __xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterdefaultuser[$$RabbitmqClusterDefaultUser$$]__ | Identifying information on internal resources
- | *`binding`* __link:https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#localobjectreference-v1-core[$$LocalObjectReference$$]__ | Binding exposes a secret containing the binding information for this RabbitmqCluster. It implements the service binding Provisioned Service duck type. See: https://github.com/servicebinding/spec#provisioned-service
- | *`observedGeneration`* __integer__ | observedGeneration is the most recent successful generation observed for this RabbitmqCluster. It corresponds to the RabbitmqCluster's generation, which is updated on mutation by the API Server.
-@@ -347,6 +353,7 @@ SecretBackend configures a single secret backend. Today, only Vault exists as su
+@@ -431,6 +437,7 @@ If not configured, K8s Secrets will be used.
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -209,7 +192,7 @@ index 31716cc..db33596 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -428,6 +435,7 @@ Allows for the configuration of TLS certificates to be used by RabbitMQ. Also al
+@@ -545,6 +552,7 @@ Allows for the configuration of TLS certificates to be used by RabbitMQ. Also al
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -218,5 +201,5 @@ index 31716cc..db33596 100644
  
  [cols="25a,75a", options="header"]
 -- 
-2.45.2
+2.47.0
 
