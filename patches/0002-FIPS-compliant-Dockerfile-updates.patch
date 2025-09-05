@@ -1,7 +1,7 @@
-From 3d69b07482fbab86ac5ddc208665111186f84dc3 Mon Sep 17 00:00:00 2001
+From 6f5f146d3da21f38133a4a7414e4b2a793974b2a Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
-Date: Wed, 13 Mar 2024 07:50:05 -0400
-Subject: [PATCH 2/3] FIPS-compliant Dockerfile updates
+Date: Wed, 3 Sep 2025 15:12:18 -0400
+Subject: [PATCH 2/5] FIPS-compliant Dockerfile updates
 
 This commit modifies the Dockerfile to have the rabbitmq-cluster-operator
 to be built from ubi9 go-toolset and ubi-minimal images so to have
@@ -9,12 +9,10 @@ the necessary dependencies to be FIPS compliant.
 
 It also squashes the build steps by removing the intermediate step
 where we create the respective user/group.
-
-Set FIPS flag in operator csv
 ---
  .prow_ci.env |  2 ++
- Dockerfile   | 23 +++++++++--------------
- 2 files changed, 11 insertions(+), 14 deletions(-)
+ Dockerfile   | 23 ++++++++---------------
+ 2 files changed, 10 insertions(+), 15 deletions(-)
  create mode 100644 .prow_ci.env
 
 diff --git a/.prow_ci.env b/.prow_ci.env
@@ -26,14 +24,13 @@ index 00000000..ce722ac7
 +export USE_IMAGE_DIGESTS=true
 +export FAIL_FIPS_CHECK=true
 diff --git a/Dockerfile b/Dockerfile
-index 1b4a0df0..6cf1629b 100644
+index ec2a8ef5..a3356242 100644
 --- a/Dockerfile
 +++ b/Dockerfile
-@@ -1,8 +1,11 @@
-+
+@@ -1,8 +1,10 @@
  # Build the manager binary
--FROM --platform=$BUILDPLATFORM golang:1.21 as builder
-+FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi9/go-toolset:1.21 as builder
+-FROM --platform=$BUILDPLATFORM golang:1.24 AS builder
++FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi9/go-toolset:1.24 as builder
  
  WORKDIR /workspace
  
@@ -42,16 +39,17 @@ index 1b4a0df0..6cf1629b 100644
  # Dependencies are cached unless we change go.mod or go.sum
  COPY go.mod go.mod
  COPY go.sum go.sum
-@@ -20,26 +23,18 @@ ARG TARGETOS
- ARG TARGETARCH
- ENV GOOS $TARGETOS
- ENV GOARCH $TARGETARCH
+@@ -24,27 +26,18 @@ ENV GOARCH=$TARGETARCH
+ # FIPS
+ ARG FIPS_MODE=off
+ ENV GOFIPS140=$FIPS_MODE
++RUN CGO_ENABLED=1 GO111MODULE=on go build -a -tags 'strictfipsruntime timetzdata' -o manager main.go
+ 
 -RUN CGO_ENABLED=0 GO111MODULE=on go build -a -tags timetzdata -o manager main.go
 -
 -# ---------------------------------------
--FROM alpine:latest as etc-builder
-+RUN CGO_ENABLED=1 GO111MODULE=on go build -a -tags 'strictfipsruntime timetzdata' -o manager main.go
- 
+-FROM alpine:latest AS etc-builder
+-
 -RUN echo "rabbitmq-cluster-operator:x:1000:" > /etc/group && \
 -    echo "rabbitmq-cluster-operator:x:1000:1000::/home/rabbitmq-cluster-operator:/usr/sbin/nologin" > /etc/passwd
 -
@@ -59,7 +57,6 @@ index 1b4a0df0..6cf1629b 100644
 -
 -# ---------------------------------------
 -FROM scratch
-+# ---
 +FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
  
  ARG GIT_COMMIT
@@ -71,9 +68,10 @@ index 1b4a0df0..6cf1629b 100644
 -COPY --from=etc-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 +RUN echo "rabbitmq-cluster-operator:x:1000:" > /etc/group && \
 +    echo "rabbitmq-cluster-operator:x:1000:1000::/home/rabbitmq-cluster-operator:/usr/sbin/nologin" > /etc/passwd
++
  
  USER 1000:1000
  
 -- 
-2.47.0
+2.51.0
 

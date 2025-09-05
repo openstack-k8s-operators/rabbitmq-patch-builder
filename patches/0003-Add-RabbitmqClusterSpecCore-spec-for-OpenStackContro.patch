@@ -1,7 +1,7 @@
-From a3524acedd49ee0a49b5e6ae9e093c5cfb4ca590 Mon Sep 17 00:00:00 2001
+From 4ce6706790c58189b627830632237d6972b660d5 Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
-Date: Wed, 13 Mar 2024 08:07:18 -0400
-Subject: [PATCH 3/3] Add RabbitmqClusterSpecCore spec for
+Date: Wed, 3 Sep 2025 15:25:37 -0400
+Subject: [PATCH 3/5] Add RabbitmqClusterSpecCore spec for
  OpenStackControlplane
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH 3/3] Add RabbitmqClusterSpecCore spec for
  3 files changed, 115 insertions(+)
 
 diff --git a/api/v1beta1/rabbitmqcluster_types.go b/api/v1beta1/rabbitmqcluster_types.go
-index 236ada44..b3cb991c 100644
+index 5b0173e7..53912bfc 100644
 --- a/api/v1beta1/rabbitmqcluster_types.go
 +++ b/api/v1beta1/rabbitmqcluster_types.go
-@@ -100,6 +100,60 @@ type RabbitmqClusterSpec struct {
+@@ -106,6 +106,60 @@ type RabbitmqClusterSpec struct {
  	SecretBackend SecretBackend `json:"secretBackend,omitempty"`
  }
  
@@ -76,10 +76,10 @@ index 236ada44..b3cb991c 100644
  // Today, only Vault exists as supported secret backend.
  // Future secret backends could be Secrets Store CSI Driver.
 diff --git a/api/v1beta1/zz_generated.deepcopy.go b/api/v1beta1/zz_generated.deepcopy.go
-index e2318bed..8b73f5c7 100644
+index a855f797..819edc41 100644
 --- a/api/v1beta1/zz_generated.deepcopy.go
 +++ b/api/v1beta1/zz_generated.deepcopy.go
-@@ -399,6 +399,59 @@ func (in *RabbitmqClusterSpec) DeepCopy() *RabbitmqClusterSpec {
+@@ -406,6 +406,59 @@ func (in *RabbitmqClusterSpec) DeepCopy() *RabbitmqClusterSpec {
  	return out
  }
  
@@ -140,10 +140,10 @@ index e2318bed..8b73f5c7 100644
  func (in *RabbitmqClusterStatus) DeepCopyInto(out *RabbitmqClusterStatus) {
  	*out = *in
 diff --git a/docs/api/rabbitmq.com.ref.asciidoc b/docs/api/rabbitmq.com.ref.asciidoc
-index c4f9d1aa..042e713a 100644
+index 690b463f..e9892478 100644
 --- a/docs/api/rabbitmq.com.ref.asciidoc
 +++ b/docs/api/rabbitmq.com.ref.asciidoc
-@@ -191,6 +191,7 @@ RabbitMQ-related configuration.
+@@ -190,6 +190,7 @@ RabbitMQ-related configuration.
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -151,7 +151,7 @@ index c4f9d1aa..042e713a 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -263,6 +264,7 @@ Provides the ability to override the generated manifest of several child resourc
+@@ -262,6 +263,7 @@ Provides the ability to override the generated manifest of several child resourc
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -159,7 +159,7 @@ index c4f9d1aa..042e713a 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -281,6 +283,7 @@ The settings for the persistent storage desired for each Pod in the RabbitmqClus
+@@ -280,6 +282,7 @@ The settings for the persistent storage desired for each Pod in the RabbitmqClus
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -167,7 +167,7 @@ index c4f9d1aa..042e713a 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -338,6 +341,7 @@ Settable attributes for the Service resource.
+@@ -337,6 +340,7 @@ Settable attributes for the Service resource.
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -175,7 +175,7 @@ index c4f9d1aa..042e713a 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -397,6 +401,8 @@ Enables to fetch default user credentials and certificates from K8s external sec
+@@ -399,6 +403,8 @@ Enables to fetch default user credentials and certificates from K8s external sec
  |===
  
  
@@ -184,7 +184,7 @@ index c4f9d1aa..042e713a 100644
  [id="{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterstatus"]
  ==== RabbitmqClusterStatus 
  
-@@ -431,6 +437,7 @@ If not configured, K8s Secrets will be used.
+@@ -433,6 +439,7 @@ If not configured, K8s Secrets will be used.
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -192,7 +192,7 @@ index c4f9d1aa..042e713a 100644
  ****
  
  [cols="25a,75a", options="header"]
-@@ -545,6 +552,7 @@ Allows for the configuration of TLS certificates to be used by RabbitMQ. Also al
+@@ -547,6 +554,7 @@ TLSSpec allows for the configuration of TLS certificates to be used by RabbitMQ.
  .Appears In:
  ****
  - xref:{anchor_prefix}-github-com-rabbitmq-cluster-operator-v2-api-v1beta1-rabbitmqclusterspec[$$RabbitmqClusterSpec$$]
@@ -201,5 +201,5 @@ index c4f9d1aa..042e713a 100644
  
  [cols="25a,75a", options="header"]
 -- 
-2.47.0
+2.51.0
 
