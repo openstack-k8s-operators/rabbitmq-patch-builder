@@ -8,10 +8,10 @@ Patch files added to the *patches* directory will be applied during an hourly bu
 
 ## How to create patches
 
-You can create patches by adding to the [openstack-k8s-operators/rabbitmq-cluster-operator] (https://github.com/openstack-k8s-operators/rabbitmq-cluster-operator) *patches* (currently on the v2.9.0\_patches) branch and then running 'git format-patch main'. Then copy the resulting patch files into the patch directory in this project. NOTE: This branch is just to maintain patches and is periodically rebased a new upstream tag to keep us reasonably current.
+You can create patches by adding to the [openstack-k8s-operators/rabbitmq-cluster-operator] (https://github.com/openstack-k8s-operators/rabbitmq-cluster-operator) *patches* (currently on the v2.16.1\_patches) branch and then running 'git format-patch main'. Then copy the resulting patch files into the patch directory in this project. NOTE: This branch is just to maintain patches and is periodically rebased a new upstream tag to keep us reasonably current.
 
-## Example for v2.7.0 (or later)
-If we rebase on the v2.7.0 tag.... you create a branch to "stage" these patches (currently on the v2.9.0\_patches branch)
+## Example for v2.16.1 (or later)
+If we rebase on the v2.16.1 tag.... you create a branch to "stage" these patches (currently on the v2.16.1\_patches branch)
 the first two commits there have always applied cleanly (OLM and FIPS). This last commit (the struct) will need to
 be re-created each time. You copy the base struct, and drop the Image* parameters. Commit that, and then 'format-patches' and
 copy those into this repo (deleting any patches that are no longer needed/used). Maintain comments in any old commits.
