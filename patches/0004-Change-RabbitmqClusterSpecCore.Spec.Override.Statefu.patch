@@ -1,4 +1,4 @@
-From ea84b5beb207b329435be1f294ff42f51742a05d Mon Sep 17 00:00:00 2001
+From 24d163c184fe400148d8edad84cb3b7c79e0505d Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Mon, 8 Sep 2025 08:53:27 -0400
 Subject: [PATCH 4/5] Change RabbitmqClusterSpecCore.Spec.Override.StatefulSet
