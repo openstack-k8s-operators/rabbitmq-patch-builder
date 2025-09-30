@@ -1,4 +1,4 @@
-From 6f5f146d3da21f38133a4a7414e4b2a793974b2a Mon Sep 17 00:00:00 2001
+From 93721db86fb6b85d6c5803676903f110851bb09f Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Wed, 3 Sep 2025 15:12:18 -0400
 Subject: [PATCH 2/5] FIPS-compliant Dockerfile updates

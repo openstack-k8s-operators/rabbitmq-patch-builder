@@ -1,4 +1,4 @@
-From 4ce6706790c58189b627830632237d6972b660d5 Mon Sep 17 00:00:00 2001
+From 1aabf27db36e97529c7862aaa78fb06bcb9797b8 Mon Sep 17 00:00:00 2001
 From: Dan Prince <dprince@redhat.com>
 Date: Wed, 3 Sep 2025 15:25:37 -0400
 Subject: [PATCH 3/5] Add RabbitmqClusterSpecCore spec for
